@@ -43,12 +43,20 @@ class PretrainDataset(Dataset):
                 print("got empty seq:")
                 continue
             if len(item_seq) <= self.max_len:
-                self.part_sequence.append(item_seq[-(self.max_len + 2):-2])
+                new_seq = item_seq[-(self.max_len + 2):-2]
+                if len(new_seq) == 0:
+                    # print("got empty seq before:", item_seq)
+                    continue
+                self.part_sequence.append(new_seq)
             else:
                 beg_idx = list(range(len(item_seq) - self.max_len, 0, -sliding_step))
                 beg_idx.append(0)
                 for i in beg_idx[::-1]:
-                    self.part_sequence.append(item_seq[i - 2:i + self.max_len - 2])  # keeping same as train set
+                    new_seq = item_seq[i - 2:i + self.max_len - 2]
+                    if len(new_seq) == 0:
+                        # print("got empty seq when:", i, ",before:", item_seq)
+                        continue
+                    self.part_sequence.append(new_seq)  # keeping same as train set
 
     def __len__(self):
         return len(self.part_sequence)

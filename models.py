@@ -115,7 +115,7 @@ class DSSRecModel(SASRecModel):
         denominator = temp.transpose(0, 1)  # [B, K]
         seq2seq_loss_k = -torch.log2(numerator / denominator)
         seq2seq_loss_k = torch.flatten(seq2seq_loss_k)
-        thresh_th = int(np.floor(self.args.lambda_ * self.args.pre_batch_size * self.args.num_intents))
+        thresh_th = int(np.floor(self.args.lambda_ * inp_subseq_encodings.size()[0] * self.args.num_intents))
         thresh = torch.kthvalue(seq2seq_loss_k, thresh_th)[0]
         conf_indicator = seq2seq_loss_k <= thresh
         conf_seq2seq_loss_k = torch.mul(seq2seq_loss_k, conf_indicator)
